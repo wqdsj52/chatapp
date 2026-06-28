@@ -1,17 +1,16 @@
 import { create } from 'zustand';
-import { authApi, chatApi, userApi, notifApi } from '../lib/api';
+import { chatApi, userApi, notifApi } from '../lib/api';
 import { getSocket, disconnectSocket } from '../lib/socket';
 
 interface User { id: string; phone: string; account: string; nickname: string; avatarUrl: string; }
 interface Session {
   id: string; type: 'single' | 'group'; name?: string; members: string[];
   lastMessage: any; otherMembers: { id: string; nickname: string; avatarUrl: string }[];
+  createdAt?: string;
 }
 interface Message { id: string; sessionId: string; senderId: string; type: string; content: string; createdAt: string; sender: any; }
 interface Notification { id: string; type: string; title: string; content: string; read: boolean; createdAt: string; }
 
-// Snapshot of online users for rendering
-const onlineUsersArray: string[] = [];
 
 interface AppState {
   user: User | null;
@@ -24,6 +23,7 @@ interface AppState {
   typingUsers: Record<string, string[]>;
 
   setAuth: (token: string, user: User) => void;
+  setUser: (user: User) => void;
   logout: () => void;
   fetchSessions: () => Promise<void>;
   setCurrentSession: (id: string) => void;
@@ -54,6 +54,11 @@ export const useStore = create<AppState>((set, get) => ({
     localStorage.setItem('user', JSON.stringify(user));
     set({ token, user });
     get().initSocket();
+  },
+
+  setUser: (user) => {
+    localStorage.setItem('user', JSON.stringify(user));
+    set({ user });
   },
 
   logout: () => {
