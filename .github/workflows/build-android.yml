@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          set-safe-directory: false
 
       - uses: actions/setup-java@v4
         with:
@@ -19,9 +21,8 @@ jobs:
           java-version: '17'
 
       - name: Build debug APK
-        run: |
-          cd apps/android
-          java -jar gradle/wrapper/gradle-wrapper.jar assembleDebug
+        working-directory: apps/android
+        run: java -jar gradle/wrapper/gradle-wrapper.jar assembleDebug
 
       - uses: actions/upload-artifact@v4
         with:
