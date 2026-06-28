@@ -21,7 +21,6 @@ jobs:
       - name: Build debug APK
         run: |
           cd apps/android
-          chmod +x gradlew
           ./gradlew assembleDebug
 
       - uses: actions/upload-artifact@v4
