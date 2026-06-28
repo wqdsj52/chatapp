@@ -2,10 +2,6 @@ name: Build Android APK
 
 on:
   workflow_dispatch: {}
-  push:
-    paths:
-      - 'apps/android/**'
-      - '.github/workflows/build-android.yml'
 
 jobs:
   build:
@@ -18,25 +14,29 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: apps/mobile
+        run: npm install
+
+      - name: Generate native Android project
+        working-directory: apps/mobile
+        run: npx expo prebuild --platform android --no-install
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.7'
-
-      - name: Generate Gradle wrapper
-        working-directory: apps/android
-        run: |
-          rm -f gradle/wrapper/gradle-wrapper.jar
-          rm -f gradlew gradlew.bat
-          gradle wrapper --gradle-version 8.7
-          chmod +x gradlew
 
       - name: Build debug APK
-        working-directory: apps/android
-        run: ./gradlew assembleDebug --no-daemon
+        working-directory: apps/mobile/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
 
       - uses: actions/upload-artifact@v4
         with:
-          name: chatapp-android-debug
-          path: apps/android/app/build/outputs/apk/debug/app-debug.apk
+          name: chatapp-android
+          path: apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
