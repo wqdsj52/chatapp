@@ -18,25 +18,27 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Download Gradle and generate wrapper
+      - name: Fix Gradle wrapper
         working-directory: apps/android
         run: |
-          # Remove the corrupted wrapper jar from git
-          rm -f gradle/wrapper/gradle-wrapper.jar
-          rm -f gradle/wrapper/gradle-wrapper.properties
-          rm -f gradlew gradlew.bat
-
-          # Download Gradle 8.7 distribution
-          curl -fsSL "https://services.gradle.org/distributions/gradle-8.7-bin.zip" -o /tmp/gradle.zip
-          unzip -q /tmp/gradle.zip -d /tmp/
-
-          # Use Gradle to generate wrapper in our project
-          /tmp/gradle-8.7/bin/gradle wrapper --gradle-version 8.7
-
-          # Verify the wrapper jar exists and is valid
+          # Download a known-good gradle-wrapper.jar directly
+          GRADLE_VERSION="8.7"
+          curl -fsSL -o gradle/wrapper/gradle-wrapper.jar \
+            "https://raw.githubusercontent.com/gradle/gradle/v${GRADLE_VERSION}/gradle/wrapper/gradle-wrapper.jar"
+          
+          # Update properties to match
+          cat > gradle/wrapper/gradle-wrapper.properties << EOF
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
+          networkTimeout=10000
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
+          
+          chmod +x gradlew
           ls -la gradle/wrapper/gradle-wrapper.jar
           file gradle/wrapper/gradle-wrapper.jar
-          chmod +x gradlew
 
       - name: Build debug APK
         working-directory: apps/android
