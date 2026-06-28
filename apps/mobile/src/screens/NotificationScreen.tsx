@@ -35,7 +35,7 @@ export default function NotificationScreen() {
 
   const formatTime = (t: string) => {
     const d = new Date(t);
-    return `${d.getMonth() + 1}/${d.getDate()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+    return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
   };
 
   const getIcon = (type: string) => {
@@ -50,10 +50,10 @@ export default function NotificationScreen() {
   return (
     <View style={s.container}>
       <View style={s.header}>
-        <Text style={s.headerTitle}>通知</Text>
+        <Text style={s.headerTitle}>閫氱煡</Text>
         {notifications.some(n => !n.read) && (
           <TouchableOpacity onPress={handleMarkAll}>
-            <Text style={s.markAll}>全部已读</Text>
+            <Text style={s.markAll}>鍏ㄩ儴宸茶</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -64,7 +64,7 @@ export default function NotificationScreen() {
         ListEmptyComponent={
           <View style={s.empty}>
             <Ionicons name="notifications-off-outline" size={64} color="#CBD5E1" />
-            <Text style={s.emptyText}>暂无通知</Text>
+            <Text style={s.emptyText}>鏆傛棤閫氱煡</Text>
           </View>
         }
         renderItem={({ item }) => (
@@ -73,7 +73,7 @@ export default function NotificationScreen() {
               <Ionicons name={getIcon(item.type)} size={22} color={!item.read ? '#3B82F6' : '#94A3B8'} />
             </View>
             <View style={s.content}>
-              <Text style={s.title}>{item.title || '通知'}</Text>
+              <Text style={s.title}>{item.title || '閫氱煡'}</Text>
               <Text style={s.body} numberOfLines={2}>{item.content || ''}</Text>
               <Text style={s.time}>{formatTime(item.createdAt)}</Text>
             </View>

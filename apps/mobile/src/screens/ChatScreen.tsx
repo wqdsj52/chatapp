@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/auth-context';
@@ -36,7 +36,7 @@ export default function ChatScreen({ route }: any) {
       await api.sendMessage(sessionId, 'text', content);
       await loadMessages();
     } catch (e: any) {
-      Alert.alert('·¢ËÍÊ§°Ü', e.message);
+      Alert.alert('å‘é€å¤±è´¥', e.message);
     } finally {
       setSending(false);
     }
@@ -64,7 +64,7 @@ export default function ChatScreen({ route }: any) {
         )}
       />
       <View style={s.inputBar}>
-        <TextInput style={s.input} value={text} onChangeText={setText} placeholder="ÊäÈëÏûÏ¢..." multiline maxLength={500} />
+        <TextInput style={s.input} value={text} onChangeText={setText} placeholder="è¾“å…¥æ¶ˆæ¯..." multiline maxLength={500} />
         <TouchableOpacity style={s.sendBtn} onPress={handleSend} disabled={sending || !text.trim()}>
           <Ionicons name="send" size={22} color={text.trim() ? '#3B82F6' : '#CBD5E1'} />
         </TouchableOpacity>

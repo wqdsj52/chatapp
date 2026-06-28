@@ -28,14 +28,14 @@ export default function SessionListScreen({ navigation }: any) {
   const getName = (s: any) => {
     if (s.name) return s.name;
     const other = s.members?.find((m: any) => m.userId !== user?.userId);
-    return other?.nickname || other?.account || 'Î´Öª';
+    return other?.nickname || other?.account || 'æœªçŸ¥';
   };
 
   const getLastMsg = (s: any) => {
-    if (!s.lastMessage) return 'ÔİÎŞÏûÏ¢';
+    if (!s.lastMessage) return 'æš‚æ— æ¶ˆæ¯';
     const msg = s.lastMessage;
-    if (msg.type === 'image') return '[Í¼Æ¬]';
-    if (msg.type === 'file') return '[ÎÄ¼ş]';
+    if (msg.type === 'image') return '[å›¾ç‰‡]';
+    if (msg.type === 'file') return '[æ–‡ä»¶]';
     return msg.content?.substring(0, 40) || '';
   };
 
@@ -44,15 +44,15 @@ export default function SessionListScreen({ navigation }: any) {
     const d = new Date(t);
     const now = new Date();
     if (d.toDateString() === now.toDateString()) {
-      return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+      return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
     }
-    return `${d.getMonth() + 1}/${d.getDate()}`;
+    return (d.getMonth() + 1) + '/' + d.getDate();
   };
 
   return (
     <View style={s.container}>
       <View style={s.header}>
-        <Text style={s.headerTitle}>ÏûÏ¢</Text>
+        <Text style={s.headerTitle}>æ¶ˆæ¯</Text>
         <TouchableOpacity onPress={() => navigation.navigate('SearchUser')}>
           <Ionicons name="add-circle-outline" size={28} color="#3B82F6" />
         </TouchableOpacity>
@@ -64,8 +64,8 @@ export default function SessionListScreen({ navigation }: any) {
         ListEmptyComponent={
           <View style={s.empty}>
             <Ionicons name="chatbubbles-outline" size={64} color="#CBD5E1" />
-            <Text style={s.emptyText}>ÔİÎŞ»á»°</Text>
-            <Text style={s.emptyHint}>µã»÷ÓÒÉÏ½Ç + ·¢ÆğĞÂÁÄÌì</Text>
+            <Text style={s.emptyText}>æš‚æ— ä¼šè¯</Text>
+            <Text style={s.emptyHint}>ç‚¹å‡»å³ä¸Šè§’ + å‘èµ·æ–°èŠå¤©</Text>
           </View>
         }
         renderItem={({ item }) => (

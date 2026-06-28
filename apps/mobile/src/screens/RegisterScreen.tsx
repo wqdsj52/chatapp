@@ -11,12 +11,12 @@ export default function RegisterScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
-    if (!phone || !account || !password) return Alert.alert('ÌáÊ¾', 'ÇëÌîĞ´ÊÖ»úºÅ¡¢ÕËºÅºÍÃÜÂë');
+    if (!phone || !account || !password) return Alert.alert('æç¤º', 'è¯·å¡«å†™æ‰‹æœºå·ã€è´¦å·å’Œå¯†ç ');
     setLoading(true);
     try {
       await register(phone, account, password, nickname || undefined);
-    } catch (e: any) {
-      Alert.alert('×¢²áÊ§°Ü', e.message);
+    } catch (e) {
+      Alert.alert('æ³¨å†Œå¤±è´¥', e.message);
     } finally {
       setLoading(false);
     }
@@ -25,16 +25,16 @@ export default function RegisterScreen({ navigation }: any) {
   return (
     <KeyboardAvoidingView style={st.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View style={st.inner}>
-        <Text style={st.title}>×¢²áĞÂÕËºÅ</Text>
-        <TextInput style={st.input} placeholder="ÊÖ»úºÅ" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
-        <TextInput style={st.input} placeholder="ÕËºÅ" value={account} onChangeText={setAccount} autoCapitalize="none" />
-        <TextInput style={st.input} placeholder="êÇ³Æ£¨Ñ¡Ìî£©" value={nickname} onChangeText={setNickname} />
-        <TextInput style={st.input} placeholder="ÃÜÂë" value={password} onChangeText={setPassword} secureTextEntry />
+        <Text style={st.title}>æ³¨å†Œæ–°è´¦å·</Text>
+        <TextInput style={st.input} placeholder="æ‰‹æœºå·" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+        <TextInput style={st.input} placeholder="è´¦å·" value={account} onChangeText={setAccount} autoCapitalize="none" />
+        <TextInput style={st.input} placeholder="æ˜µç§°ï¼ˆé€‰å¡«ï¼‰" value={nickname} onChangeText={setNickname} />
+        <TextInput style={st.input} placeholder="å¯†ç " value={password} onChangeText={setPassword} secureTextEntry />
         <TouchableOpacity style={st.btn} onPress={handleRegister} disabled={loading}>
-          <Text style={st.btnText}>{loading ? '×¢²áÖĞ...' : '×¢²á'}</Text>
+          <Text style={st.btnText}>{loading ? 'æ³¨å†Œä¸­...' : 'æ³¨å†Œ'}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={st.link}>ÒÑÓĞÕËºÅ£¿È¥µÇÂ¼</Text>
+          <Text style={st.link}>å·²æœ‰è´¦å·ï¼Ÿå»ç™»å½•</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

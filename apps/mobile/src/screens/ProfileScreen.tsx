@@ -16,25 +16,25 @@ export default function ProfileScreen() {
       await api.updateMe({ nickname });
       await refresh();
       setEditing(false);
-      Alert.alert('³É¹¦', '¸öÈËĞÅÏ¢ÒÑ¸üĞÂ');
+      Alert.alert('æˆåŠŸ', 'ä¸ªäººä¿¡æ¯å·²æ›´æ–°');
     } catch (e: any) {
-      Alert.alert('Ê§°Ü', e.message);
+      Alert.alert('å¤±è´¥', e.message);
     } finally {
       setSaving(false);
     }
   };
 
   const handleLogout = () => {
-    Alert.alert('ÍË³öµÇÂ¼', 'È·¶¨ÒªÍË³öÂğ£¿', [
-      { text: 'È¡Ïû', style: 'cancel' },
-      { text: 'È·¶¨', style: 'destructive', onPress: logout },
+    Alert.alert('é€€å‡ºç™»å½•', 'ç¡®å®šè¦é€€å‡ºå—ï¼Ÿ', [
+      { text: 'å–æ¶ˆ', style: 'cancel' },
+      { text: 'ç¡®å®š', style: 'destructive', onPress: logout },
     ]);
   };
 
   return (
     <ScrollView style={s.container}>
       <View style={s.header}>
-        <Text style={s.headerTitle}>¸öÈËÖĞĞÄ</Text>
+        <Text style={s.headerTitle}>ä¸ªäººä¸­å¿ƒ</Text>
       </View>
       <View style={s.avatarSection}>
         <View style={s.avatar}>
@@ -43,27 +43,27 @@ export default function ProfileScreen() {
       </View>
       <View style={s.card}>
         <View style={s.row}>
-          <Text style={s.label}>ÕËºÅ</Text>
+          <Text style={s.label}>è´¦å·</Text>
           <Text style={s.value}>{user?.account}</Text>
         </View>
         <View style={s.divider} />
         <View style={s.row}>
-          <Text style={s.label}>êÇ³Æ</Text>
+          <Text style={s.label}>æ˜µç§°</Text>
           {editing ? (
             <TextInput style={s.editInput} value={nickname} onChangeText={setNickname} autoFocus />
           ) : (
-            <Text style={s.value}>{nickname || 'Î´ÉèÖÃ'}</Text>
+            <Text style={s.value}>{nickname || 'æœªè®¾ç½®'}</Text>
           )}
         </View>
         <View style={s.divider} />
         <TouchableOpacity style={s.row} onPress={editing ? handleSave : () => setEditing(true)}>
           <Ionicons name={editing ? 'checkmark-circle-outline' : 'create-outline'} size={20} color="#3B82F6" />
-          <Text style={s.editBtn}>{editing ? (saving ? '±£´æÖĞ...' : '±£´æ') : '±à¼­×ÊÁÏ'}</Text>
+          <Text style={s.editBtn}>{editing ? (saving ? 'ä¿å­˜ä¸­...' : 'ä¿å­˜') : 'ç¼–è¾‘èµ„æ–™'}</Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity style={s.logoutBtn} onPress={handleLogout}>
         <Ionicons name="log-out-outline" size={20} color="#EF4444" />
-        <Text style={s.logoutText}>ÍË³öµÇÂ¼</Text>
+        <Text style={s.logoutText}>é€€å‡ºç™»å½•</Text>
       </TouchableOpacity>
     </ScrollView>
   );

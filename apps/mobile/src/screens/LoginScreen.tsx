@@ -9,12 +9,12 @@ export default function LoginScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!account || !password) return Alert.alert('ÌáÊ¾', 'ÇëÊäÈëÕËºÅºÍÃÜÂë');
+    if (!account || !password) return Alert.alert('æç¤º', 'è¯·è¾“å…¥è´¦å·å’Œå¯†ç ');
     setLoading(true);
     try {
       await login(account, password);
     } catch (e: any) {
-      Alert.alert('µÇÂ¼Ê§°Ü', e.message);
+      Alert.alert('ç™»å½•å¤±è´¥', e.message);
     } finally {
       setLoading(false);
     }
@@ -23,16 +23,16 @@ export default function LoginScreen({ navigation }: any) {
   return (
     <KeyboardAvoidingView style={s.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <View style={s.inner}>
-        <Text style={s.logo}>??</Text>
+        <Text style={s.logo}>ğŸ’¬</Text>
         <Text style={s.title}>ChatApp</Text>
-        <Text style={s.subtitle}>ºÍÅóÓÑ¿ªÊ¼ÁÄÌì°É</Text>
-        <TextInput style={s.input} placeholder="ÕËºÅ" value={account} onChangeText={setAccount} autoCapitalize="none" />
-        <TextInput style={s.input} placeholder="ÃÜÂë" value={password} onChangeText={setPassword} secureTextEntry />
+        <Text style={s.subtitle}>å’Œæœ‹å‹å¼€å§‹èŠå¤©å§</Text>
+        <TextInput style={s.input} placeholder="è´¦å·" value={account} onChangeText={setAccount} autoCapitalize="none" />
+        <TextInput style={s.input} placeholder="å¯†ç " value={password} onChangeText={setPassword} secureTextEntry />
         <TouchableOpacity style={s.btn} onPress={handleLogin} disabled={loading}>
-          <Text style={s.btnText}>{loading ? 'µÇÂ¼ÖĞ...' : 'µÇÂ¼'}</Text>
+          <Text style={s.btnText}>{loading ? 'ç™»å½•ä¸­...' : 'ç™»å½•'}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-          <Text style={s.link}>Ã»ÓĞÕËºÅ£¿È¥×¢²á</Text>
+          <Text style={s.link}>æ²¡æœ‰è´¦å·ï¼Ÿå»æ³¨å†Œ</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>

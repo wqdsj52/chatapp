@@ -15,7 +15,7 @@ export default function SearchUserScreen({ navigation }: any) {
       const data = await api.searchUsers(query.trim());
       setResults(data);
     } catch (e: any) {
-      Alert.alert('ËÑË÷Ê§°Ü', e.message);
+      Alert.alert('æœç´¢å¤±è´¥', e.message);
     } finally {
       setLoading(false);
     }
@@ -24,16 +24,16 @@ export default function SearchUserScreen({ navigation }: any) {
   const startChat = async (userId: string) => {
     try {
       const session = await api.createSingleSession(userId);
-      navigation.replace('Chat', { sessionId: session.id, name: results.find(u => u.id === userId)?.nickname || results.find(u => u.id === userId)?.account || 'ÁÄÌì' });
+      navigation.replace('Chat', { sessionId: session.id, name: results.find(u => u.id === userId)?.nickname || results.find(u => u.id === userId)?.account || 'èŠå¤©' });
     } catch (e: any) {
-      Alert.alert('Ê§°Ü', e.message);
+      Alert.alert('å¤±è´¥', e.message);
     }
   };
 
   return (
     <View style={s.container}>
       <View style={s.searchBar}>
-        <TextInput style={s.searchInput} placeholder="ËÑË÷ÓÃ»§..." value={query} onChangeText={setQuery} onSubmitEditing={handleSearch} autoFocus returnKeyType="search" />
+        <TextInput style={s.searchInput} placeholder="æœç´¢ç”¨æˆ·..." value={query} onChangeText={setQuery} onSubmitEditing={handleSearch} autoFocus returnKeyType="search" />
         <TouchableOpacity onPress={handleSearch}>
           <Ionicons name="search" size={22} color="#3B82F6" />
         </TouchableOpacity>
@@ -43,7 +43,7 @@ export default function SearchUserScreen({ navigation }: any) {
         keyExtractor={(item) => item.id}
         ListEmptyComponent={
           <View style={s.empty}>
-            <Text style={s.emptyText}>{loading ? 'ËÑË÷ÖĞ...' : 'ÊäÈë¹Ø¼ü´ÊËÑË÷ÓÃ»§'}</Text>
+            <Text style={s.emptyText}>{loading ? 'æœç´¢ä¸­...' : 'è¾“å…¥å…³é”®è¯æœç´¢ç”¨æˆ·'}</Text>
           </View>
         }
         renderItem={({ item }) => (
