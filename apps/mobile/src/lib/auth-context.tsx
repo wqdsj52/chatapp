@@ -33,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(t);
         try {
           const u = await api.getMe();
-          setUser(u);
+          setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl });
         } catch {
           await AsyncStorage.removeItem('token');
           setToken(null);
@@ -45,18 +45,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (account: string, password: string) => {
     const res = await api.login(account, password);
-    await AsyncStorage.setItem('token', res.access_token || res.token);
-    setToken(res.access_token || res.token);
+    await AsyncStorage.setItem('token', res.accessToken || res.access_token || res.token);
+    setToken(res.accessToken || res.access_token || res.token);
     const u = await api.getMe();
-    setUser(u);
+    setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl });
   };
 
   const register = async (phone: string, account: string, password: string, nickname?: string) => {
     const res = await api.register(phone, account, password, nickname);
-    await AsyncStorage.setItem('token', res.access_token || res.token);
-    setToken(res.access_token || res.token);
+    await AsyncStorage.setItem('token', res.accessToken || res.access_token || res.token);
+    setToken(res.accessToken || res.access_token || res.token);
     const u = await api.getMe();
-    setUser(u);
+    setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl });
   };
 
   const logout = async () => {
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refresh = async () => {
     try {
       const u = await api.getMe();
-      setUser(u);
+      setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl });
     } catch {}
   };
 
