@@ -18,27 +18,18 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Fix Gradle wrapper
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Generate Gradle wrapper
         working-directory: apps/android
         run: |
-          # Download a known-good gradle-wrapper.jar directly
-          GRADLE_VERSION="8.7"
-          curl -fsSL -o gradle/wrapper/gradle-wrapper.jar \
-            "https://raw.githubusercontent.com/gradle/gradle/v${GRADLE_VERSION}/gradle/wrapper/gradle-wrapper.jar"
-          
-          # Update properties to match
-          cat > gradle/wrapper/gradle-wrapper.properties << EOF
-          distributionBase=GRADLE_USER_HOME
-          distributionPath=wrapper/dists
-          distributionUrl=https\://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
-          networkTimeout=10000
-          zipStoreBase=GRADLE_USER_HOME
-          zipStorePath=wrapper/dists
-          EOF
-          
+          rm -f gradle/wrapper/gradle-wrapper.jar
+          rm -f gradlew gradlew.bat
+          gradle wrapper --gradle-version 8.7
           chmod +x gradlew
-          ls -la gradle/wrapper/gradle-wrapper.jar
-          file gradle/wrapper/gradle-wrapper.jar
 
       - name: Build debug APK
         working-directory: apps/android
