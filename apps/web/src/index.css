@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2563eb;
+  --color-primary-light: #eff6ff;
+  --color-primary-dark: #1d4ed8;
+  --color-surface: #ffffff;
+  --color-bg: #f5f7fa;
+  --color-text: #111827;
+  --color-text-secondary: #6b7280;
+  --color-border: #f0f0f0;
+  --color-online: #22c55e;
+  --color-danger: #ef4444;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body, #root {
+  margin: 0; padding: 0;
+  height: 100%; width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100%;
+  background: var(--color-surface);
+  position: relative;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Message bubbles */
+.msg-bubble {
+  max-width: 72%;
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  word-break: break-word;
+  position: relative;
+}
+.msg-bubble.self {
+  background: var(--color-primary);
+  color: white;
+  border-bottom-right-radius: 6px;
+}
+.msg-bubble.other {
+  background: #e9ecf0;
+  color: var(--color-text);
+  border-bottom-left-radius: 6px;
+}
+
+/* Smooth page transitions */
+.page-enter { animation: fadeIn 0.2s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Send button pulse */
+.send-btn:active { transform: scale(0.92); }
