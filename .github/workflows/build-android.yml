@@ -4,48 +4,28 @@ on:
   workflow_dispatch: {}
   push:
     paths:
-      - 'apps/web/**'
+      - 'apps/android/**'
       - '.github/workflows/build-android.yml'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-          package_json_file: apps/web/package.json
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-          cache-dependency-path: apps/web/pnpm-lock.yaml
 
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run build
-
-      - name: Sync Capacitor Android assets
-        run: npx cap sync android
-
       - name: Build debug APK
         run: |
-          cd android
+          cd apps/android
           chmod +x gradlew
           ./gradlew assembleDebug
 
       - uses: actions/upload-artifact@v4
         with:
           name: chatapp-android-debug
-          path: apps/web/android/app/build/outputs/apk/debug/app-debug.apk
+          path: apps/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
