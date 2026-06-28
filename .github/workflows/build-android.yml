@@ -21,7 +21,7 @@ jobs:
       - name: Build debug APK
         run: |
           cd apps/android
-          bash gradlew assembleDebug
+          java -jar gradle/wrapper/gradle-wrapper.jar assembleDebug
 
       - uses: actions/upload-artifact@v4
         with:
