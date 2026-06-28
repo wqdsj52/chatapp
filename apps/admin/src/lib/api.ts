@@ -1,4 +1,4 @@
-const BASE = 'http://localhost:3001';
+const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 function getToken() {
   return localStorage.getItem('admin_token') || '';
@@ -33,11 +33,7 @@ export async function api<T = any>(path: string, options: RequestInit = {}): Pro
 
   const text = await res.text();
   let data: any = text;
-  try {
-    data = JSON.parse(text);
-  } catch {
-    // keep text
-  }
+  try { data = JSON.parse(text); } catch { /* keep text */ }
 
   if (!res.ok) {
     const message = (data && typeof data === 'object' ? data.message : '') || res.statusText || String.fromCharCode(35831,27714,22833,36133);

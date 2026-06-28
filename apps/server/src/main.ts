@@ -1,4 +1,4 @@
-﻿import 'reflect-metadata';
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
@@ -61,18 +61,29 @@ async function seedDatabase(dataSource: DataSource) {
 }
 
 async function bootstrap() {
-  const dataDir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+  // Only create data dir for SQLite (local dev)
+  if (!process.env.DATABASE_URL) {
+    const dataDir = path.join(process.cwd(), 'data');
+    if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+  }
 
   const app = await NestFactory.create(AppModule);
-  app.enableCors({ origin: true, credentials: true });
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN || true,
+    credentials: true,
+  });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  // Health check endpoint
+  app.getHttpAdapter().get('/health', (req: any, res: any) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
 
   const dataSource = app.get(DataSource);
   await seedDatabase(dataSource);
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
-  console.log(`🚀 Server running on http://localhost:${port}`);
+  console.log(`?? Server running on http://localhost:${port}`);
 }
 bootstrap();
