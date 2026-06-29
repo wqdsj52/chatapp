@@ -1,8 +1,0 @@
-# Prevent line-ending conversion on binary files
-*.jar binary
-*.png binary
-*.ico binary
-*.zip binary
-*.apk binary
-*.jks binary
-*.keystore binary
