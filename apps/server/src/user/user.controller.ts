@@ -13,7 +13,7 @@ export class UserController {
   }
 
   @Patch('me')
-  updateMe(@Req() req: any, @Body() body: { nickname?: string; avatarUrl?: string }) {
+  updateMe(@Req() req: any, @Body() body: { nickname?: string; avatarUrl?: string; userCode?: string }) {
     return this.userService.updateProfile(req.user.userId, body);
   }
 

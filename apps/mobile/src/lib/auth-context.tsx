@@ -2,28 +2,11 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from './api';
 
-interface User {
-  userId: string;
-  account: string;
-  nickname?: string;
-  avatarUrl?: string;
-}
+const AuthContext = createContext(null);
 
-interface AuthCtx {
-  user: User | null;
-  token: string | null;
-  loading: boolean;
-  login: (account: string, password: string) => Promise<void>;
-  register: (phone: string, account: string, password: string, nickname?: string) => Promise<void>;
-  logout: () => Promise<void>;
-  refresh: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthCtx>(null as any);
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,7 +16,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(t);
         try {
           const u = await api.getMe();
-          setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl });
+          setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl, userCode: u.userCode });
         } catch {
           await AsyncStorage.removeItem('token');
           setToken(null);
@@ -43,20 +26,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })();
   }, []);
 
-  const login = async (account: string, password: string) => {
+  const login = async (account, password) => {
     const res = await api.login(account, password);
-    await AsyncStorage.setItem('token', res.accessToken || res.access_token || res.token);
-    setToken(res.accessToken || res.access_token || res.token);
+    await AsyncStorage.setItem('token', res.accessToken);
+    setToken(res.accessToken);
     const u = await api.getMe();
-    setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl });
+    setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl, userCode: u.userCode });
   };
 
-  const register = async (phone: string, account: string, password: string, nickname?: string) => {
-    const res = await api.register(phone, account, password, nickname);
-    await AsyncStorage.setItem('token', res.accessToken || res.access_token || res.token);
-    setToken(res.accessToken || res.access_token || res.token);
+  const register = async (phone, account, password, nickname, userCode) => {
+    const res = await api.register(phone, account, password, nickname, userCode);
+    await AsyncStorage.setItem('token', res.accessToken);
+    setToken(res.accessToken);
     const u = await api.getMe();
-    setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl });
+    setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl, userCode: u.userCode });
   };
 
   const logout = async () => {
@@ -68,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refresh = async () => {
     try {
       const u = await api.getMe();
-      setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl });
+      setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl, userCode: u.userCode });
     } catch {}
   };
 

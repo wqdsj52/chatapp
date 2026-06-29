@@ -1,4 +1,4 @@
-﻿import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity('users')
 export class User {
@@ -10,6 +10,9 @@ export class User {
 
   @Column({ unique: true })
   account!: string;
+
+  @Column({ unique: true, nullable: true })
+  userCode!: string;
 
   @Column()
   passwordHash!: string;

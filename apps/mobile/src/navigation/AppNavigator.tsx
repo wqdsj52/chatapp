@@ -26,7 +26,7 @@ function MainTabs() {
         tabBarStyle: { height: 60, paddingBottom: 8, paddingTop: 4, borderTopWidth: 1, borderTopColor: '#F1F5F9' },
         tabBarLabelStyle: { fontSize: 11, fontWeight: '500' },
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName: any = 'chatbubbles';
+          let iconName = 'chatbubbles';
           if (route.name === 'Sessions') iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
           else if (route.name === 'Notifications') iconName = focused ? 'notifications' : 'notifications-outline';
           else if (route.name === 'Profile') iconName = focused ? 'person' : 'person-outline';
@@ -34,16 +34,15 @@ function MainTabs() {
         },
       })}
     >
-      <Tab.Screen name="Sessions" component={SessionListScreen} options={{ tabBarLabel: '消息' }} />
-      <Tab.Screen name="Notifications" component={NotificationScreen} options={{ tabBarLabel: '通知' }} />
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: '我的' }} />
+      <Tab.Screen name="Sessions" component={SessionListScreen} options={{ tabBarLabel: '娑堟伅' }} />
+      <Tab.Screen name="Notifications" component={NotificationScreen} options={{ tabBarLabel: '閫氱煡' }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: '鎴戠殑' }} />
     </Tab.Navigator>
   );
 }
 
 export default function AppNavigator() {
   const { user, loading } = useAuth();
-
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F8FAFC' }}>
@@ -51,19 +50,18 @@ export default function AppNavigator() {
       </View>
     );
   }
-
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {user ? (
         <>
           <Stack.Screen name="Main" component={MainTabs} />
-          <Stack.Screen name="Chat" component={ChatScreen} options={{ headerShown: true, title: '聊天', headerBackTitle: '返回' }} />
-          <Stack.Screen name="SearchUser" component={SearchUserScreen} options={{ headerShown: true, title: '搜索用户', headerBackTitle: '返回' }} />
+          <Stack.Screen name="Chat" component={ChatScreen} options={{ headerShown: true, title: '鑱婂ぉ', headerBackTitle: '杩斿洖' }} />
+          <Stack.Screen name="SearchUser" component={SearchUserScreen} options={{ headerShown: true, title: '鎼滅储鐢ㄦ埛', headerBackTitle: '杩斿洖' }} />
         </>
       ) : (
         <>
           <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: true, title: '注册', headerBackTitle: '返回' }} />
+          <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: true, title: '娉ㄥ唽', headerBackTitle: '杩斿洖' }} />
         </>
       )}
     </Stack.Navigator>
