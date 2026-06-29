@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { api } from '../lib/api';
 import { useAuth } from '../lib/auth-context';
@@ -25,17 +25,21 @@ export default function SessionListScreen({ navigation }: any) {
     setRefreshing(false);
   };
 
+  const getOther = (s: any) => s.otherMembers?.[0];
+
   const getName = (s: any) => {
     if (s.name) return s.name;
-    const other = s.members?.find((m: any) => m.userId !== user?.userId);
-    return other?.nickname || other?.account || '未知';
+    const other = getOther(s);
+    return other?.nickname || other?.account || '对方';
   };
+
+  const getAvatar = (s: any) => getOther(s)?.avatarUrl || null;
 
   const getLastMsg = (s: any) => {
     if (!s.lastMessage) return '暂无消息';
     const msg = s.lastMessage;
     if (msg.type === 'image') return '[图片]';
-    if (msg.type === 'file') return '[文件]';
+    if (msg.type === 'file') { try { return '[文件] ' + JSON.parse(msg.content).name; } catch { return '[文件]'; } }
     return msg.content?.substring(0, 40) || '';
   };
 
@@ -49,10 +53,17 @@ export default function SessionListScreen({ navigation }: any) {
     return (d.getMonth() + 1) + '/' + d.getDate();
   };
 
+  const viewProfile = (s: any) => {
+    const other = getOther(s);
+    if (other?.id) {
+      navigation.navigate('UserProfile', { userId: other.id });
+    }
+  };
+
   return (
     <View style={s.container}>
       <View style={s.header}>
-        <Text style={s.headerTitle}>消息</Text>
+        <Text style={s.headerTitle}>{'消息'}</Text>
         <TouchableOpacity onPress={() => navigation.navigate('SearchUser')}>
           <Ionicons name="add-circle-outline" size={28} color="#3B82F6" />
         </TouchableOpacity>
@@ -64,24 +75,34 @@ export default function SessionListScreen({ navigation }: any) {
         ListEmptyComponent={
           <View style={s.empty}>
             <Ionicons name="chatbubbles-outline" size={64} color="#CBD5E1" />
-            <Text style={s.emptyText}>暂无会话</Text>
-            <Text style={s.emptyHint}>点击右上角 + 发起新聊天</Text>
+            <Text style={s.emptyText}>{'暂无会话'}</Text>
+            <Text style={s.emptyHint}>{'点击右上角 + 发起新聊天'}</Text>
           </View>
         }
-        renderItem={({ item }) => (
-          <TouchableOpacity style={s.item} onPress={() => navigation.navigate('Chat', { sessionId: item.id, name: getName(item) })}>
-            <View style={s.avatar}>
-              <Text style={s.avatarText}>{getName(item)[0]}</Text>
+        renderItem={({ item }) => {
+          const avatar = getAvatar(item);
+          const other = getOther(item);
+          return (
+            <View style={s.item}>
+              <TouchableOpacity onPress={() => other?.id ? viewProfile(item) : null} style={{ marginRight: 12 }}>
+                {avatar ? (
+                  <Image source={{ uri: avatar }} style={s.avatarImg} />
+                ) : (
+                  <View style={s.avatar}>
+                    <Text style={s.avatarText}>{getName(item)[0]}</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity style={s.info} onPress={() => navigation.navigate('Chat', { sessionId: item.id, name: getName(item) })}>
+                <View style={s.row}>
+                  <Text style={s.name} numberOfLines={1}>{getName(item)}</Text>
+                  <Text style={s.time}>{formatTime(item.lastMessage?.createdAt || item.updatedAt)}</Text>
+                </View>
+                <Text style={s.msg} numberOfLines={1}>{getLastMsg(item)}</Text>
+              </TouchableOpacity>
             </View>
-            <View style={s.info}>
-              <View style={s.row}>
-                <Text style={s.name} numberOfLines={1}>{getName(item)}</Text>
-                <Text style={s.time}>{formatTime(item.lastMessage?.createdAt || item.updatedAt)}</Text>
-              </View>
-              <Text style={s.msg} numberOfLines={1}>{getLastMsg(item)}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
+          );
+        }}
       />
     </View>
   );
@@ -91,8 +112,9 @@ const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 56, paddingBottom: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   headerTitle: { fontSize: 24, fontWeight: '700', color: '#1E293B' },
-  item: { flexDirection: 'row', padding: 16, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-  avatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#3B82F6', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  item: { flexDirection: 'row', padding: 16, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#F1F5F9', alignItems: 'center' },
+  avatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: '#3B82F6', justifyContent: 'center', alignItems: 'center' },
+  avatarImg: { width: 50, height: 50, borderRadius: 25 },
   avatarText: { color: '#fff', fontSize: 20, fontWeight: '600' },
   info: { flex: 1, justifyContent: 'center' },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },

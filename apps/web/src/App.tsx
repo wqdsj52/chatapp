@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+﻿import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import { useStore } from './store/useStore';
 import Login from './pages/Login';
@@ -6,6 +6,9 @@ import SessionList from './pages/SessionList';
 import ChatRoom from './pages/ChatRoom';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
+import Friends from './pages/Friends';
+import UserProfile from './pages/UserProfile';
+import Search from './pages/Search';
 import BottomNav from './components/BottomNav';
 
 function ProtectedLayout() {
@@ -27,7 +30,8 @@ function ProtectedLayout() {
 
   if (!token) return <Navigate to="/login" replace />;
 
-  const showNav = !location.pathname.startsWith('/chat/');
+  const noNavPaths = ['/chat/', '/user/', '/search'];
+  const showNav = !noNavPaths.some(p => location.pathname.startsWith(p));
 
   return (
     <div className="h-full flex flex-col">
@@ -49,6 +53,9 @@ export default function App() {
             <Route path="/chat" element={<SessionList />} />
             <Route path="/chat/:sessionId" element={<ChatRoom />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/friends" element={<Friends />} />
+            <Route path="/user/:userId" element={<UserProfile />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<Navigate to="/chat" replace />} />
           </Route>

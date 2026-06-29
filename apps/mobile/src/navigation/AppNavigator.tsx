@@ -12,6 +12,8 @@ import ChatScreen from '../screens/ChatScreen';
 import NotificationScreen from '../screens/NotificationScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SearchUserScreen from '../screens/SearchUserScreen';
+import FriendListScreen from '../screens/FriendListScreen';
+import UserProfileScreen from '../screens/UserProfileScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -28,6 +30,7 @@ function MainTabs() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName = 'chatbubbles';
           if (route.name === 'Sessions') iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
+          else if (route.name === 'Friends') iconName = focused ? 'people' : 'people-outline';
           else if (route.name === 'Notifications') iconName = focused ? 'notifications' : 'notifications-outline';
           else if (route.name === 'Profile') iconName = focused ? 'person' : 'person-outline';
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -35,6 +38,7 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Sessions" component={SessionListScreen} options={{ tabBarLabel: '消息' }} />
+      <Tab.Screen name="Friends" component={FriendListScreen} options={{ tabBarLabel: '好友' }} />
       <Tab.Screen name="Notifications" component={NotificationScreen} options={{ tabBarLabel: '通知' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: '我的' }} />
     </Tab.Navigator>
@@ -57,6 +61,7 @@ export default function AppNavigator() {
           <Stack.Screen name="Main" component={MainTabs} />
           <Stack.Screen name="Chat" component={ChatScreen} options={{ headerShown: true, title: '聊天', headerBackTitle: '返回' }} />
           <Stack.Screen name="SearchUser" component={SearchUserScreen} options={{ headerShown: true, title: '搜索用户', headerBackTitle: '返回' }} />
+          <Stack.Screen name="UserProfile" component={UserProfileScreen} options={{ headerShown: true, title: '个人名片', headerBackTitle: '返回' }} />
         </>
       ) : (
         <>

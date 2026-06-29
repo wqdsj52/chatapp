@@ -1,15 +1,15 @@
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+﻿const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 function getToken() {
   return localStorage.getItem('token') || '';
 }
 
-export async function api(path: string, options: RequestInit = {}) {
-  const res = await fetch(`${BASE}${path}`, {
+export async function api(path: string, options: any = {}) {
+  const res = await fetch(BASE + path, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${getToken()}`,
+      Authorization: 'Bearer ' + getToken(),
       ...options.headers,
     },
   });
@@ -20,15 +20,26 @@ export async function api(path: string, options: RequestInit = {}) {
   return res.json();
 }
 
+export async function uploadFile(path: string, file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch(BASE + path, {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + getToken() },
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error(err.message || '上传失败');
+  }
+  return res.json();
+}
+
 export const authApi = {
-  register: (data: { phone: string; account: string; password: string; nickname?: string }) =>
-    api('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
-  login: (data: { account: string; password: string }) =>
-    api('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
-  loginBySms: (data: { phone: string; code: string }) =>
-    api('/auth/login/sms', { method: 'POST', body: JSON.stringify(data) }),
-  sendSms: (phone: string) =>
-    api('/auth/sms/send', { method: 'POST', body: JSON.stringify({ phone }) }),
+  register: (data: any) => api('/auth/register', { method: 'POST', body: JSON.stringify(data) }),
+  login: (data: any) => api('/auth/login', { method: 'POST', body: JSON.stringify(data) }),
+  loginBySms: (data: any) => api('/auth/login/sms', { method: 'POST', body: JSON.stringify(data) }),
+  sendSms: (phone: string) => api('/auth/sms/send', { method: 'POST', body: JSON.stringify({ phone }) }),
 };
 
 export const chatApi = {
@@ -38,20 +49,28 @@ export const chatApi = {
   createGroupSession: (memberIds: string[], name: string) =>
     api('/chat/sessions/group', { method: 'POST', body: JSON.stringify({ memberIds, name }) }),
   getMessages: (sessionId: string, cursor?: string) =>
-    api(`/chat/sessions/${sessionId}/messages${cursor ? `?cursor=${cursor}` : ''}`),
+    api('/chat/sessions/' + sessionId + '/messages' + (cursor ? '?cursor=' + cursor : '')),
   sendMessage: (sessionId: string, type: string, content: string) =>
-    api(`/chat/sessions/${sessionId}/messages`, { method: 'POST', body: JSON.stringify({ type, content }) }),
+    api('/chat/sessions/' + sessionId + '/messages', { method: 'POST', body: JSON.stringify({ type, content }) }),
+  uploadFile: (sessionId: string, file: File) => uploadFile('/chat/sessions/' + sessionId + '/upload', file),
 };
 
 export const userApi = {
   getMe: () => api('/users/me'),
-  updateMe: (data: { nickname?: string; avatarUrl?: string }) =>
-    api('/users/me', { method: 'PATCH', body: JSON.stringify(data) }),
-  search: (q: string) => api(`/users/search?q=${encodeURIComponent(q)}`),
+  updateMe: (data: any) => api('/users/me', { method: 'PATCH', body: JSON.stringify(data) }),
+  search: (q: string) => api('/users/search?q=' + encodeURIComponent(q)),
+  uploadAvatar: (file: File) => uploadFile('/upload/avatar', file),
+};
+
+export const friendApi = {
+  getAll: () => api('/friends'),
+  add: (id: string) => api('/friends/' + id, { method: 'POST' }),
+  remove: (id: string) => api('/friends/' + id, { method: 'DELETE' }),
+  check: (id: string) => api('/friends/' + id + '/check'),
 };
 
 export const notifApi = {
   getAll: () => api('/notifications'),
-  markRead: (id: string) => api(`/notifications/${id}/read`, { method: 'PATCH' }),
+  markRead: (id: string) => api('/notifications/' + id + '/read', { method: 'PATCH' }),
   markAllRead: () => api('/notifications/read-all', { method: 'POST' }),
 };

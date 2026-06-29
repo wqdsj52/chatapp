@@ -7,8 +7,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  register(@Body() body: { phone: string; account: string; password: string; nickname?: string; userCode?: string }) {
-    return this.authService.register(body.phone, body.account, body.password, body.nickname, body.userCode);
+  register(@Body() body: { phone: string; account: string; password: string; nickname?: string }) {
+    return this.authService.register(body.phone, body.account, body.password, body.nickname);
   }
 
   @Post('login')
@@ -23,7 +23,7 @@ export class AuthController {
 
   @Post('sms/send')
   sendSms(@Body() body: { phone: string }) {
-    return { success: true, message: '\u9a8c\u8bc1\u7801\u5df2\u53d1\u9001\uff08\u6d4b\u8bd5\u6a21\u5f0f\uff0c\u8f93\u5165\u4efb\u610f6\u4f4d\u6570\u5b57\uff09' };
+    return { success: true, message: '验证码已发送（测试模式，输入任意6位数字）' };
   }
 
   @Get('me')

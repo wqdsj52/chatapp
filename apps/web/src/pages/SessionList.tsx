@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import dayjs from 'dayjs';
@@ -16,12 +16,11 @@ export default function SessionList() {
 
   const handleOpen = (sessionId: string) => {
     setCurrentSession(sessionId);
-    navigate(`/chat/${sessionId}`);
+    navigate('/chat/' + sessionId);
   };
 
   return (
     <div className="h-full flex flex-col bg-white page-enter">
-      {/* Header */}
       <div className="px-5 pt-14 pb-4 bg-white">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-text tracking-tight">消息</h1>
@@ -31,7 +30,6 @@ export default function SessionList() {
         </div>
       </div>
 
-      {/* Session list */}
       <div className="flex-1 overflow-y-auto">
         {sessions.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-text-secondary/50">
@@ -57,13 +55,8 @@ export default function SessionList() {
                 onClick={() => handleOpen(s.id)}
                 className="flex items-center gap-3.5 px-5 py-3.5 active:bg-gray-50 transition-colors cursor-pointer"
               >
-                {/* Avatar */}
                 <div className="relative flex-shrink-0">
-                  <div className={`w-13 h-13 rounded-2xl flex items-center justify-center text-white font-bold text-lg ${
-                    s.type === 'group'
-                      ? 'bg-gradient-to-br from-amber-400 to-orange-500'
-                      : 'bg-gradient-to-br from-blue-400 to-primary'
-                  }`}>
+                  <div className={'w-13 h-13 rounded-2xl flex items-center justify-center text-white font-bold text-lg ' + (s.type === 'group' ? 'bg-gradient-to-br from-amber-400 to-orange-500' : 'bg-gradient-to-br from-blue-400 to-primary')}>
                     {s.type === 'group' ? '群' : displayName[0]}
                   </div>
                   {s.type === 'single' && online && (
@@ -71,7 +64,6 @@ export default function SessionList() {
                   )}
                 </div>
 
-                {/* Content */}
                 <div className="flex-1 min-w-0 border-b border-border pb-3.5">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-text truncate text-[15px]">{displayName}</span>

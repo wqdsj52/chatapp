@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+﻿import { useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -41,13 +41,13 @@ export default function Notifications() {
             <div
               key={n.id}
               onClick={() => !n.read && markNotifRead(n.id)}
-              className={`px-5 py-4 border-b border-border cursor-pointer active:bg-gray-50 transition-colors ${!n.read ? 'bg-primary-light/50' : ''}`}
+              className={'px-5 py-4 border-b border-border cursor-pointer active:bg-gray-50 transition-colors ' + (!n.read ? 'bg-primary-light/50' : '')}
             >
               <div className="flex items-start gap-3">
                 {!n.read && <div className="w-2 h-2 rounded-full bg-primary mt-1.5 flex-shrink-0" />}
-                <div className={`flex-1 ${n.read ? 'ml-5' : ''}`}>
+                <div className={'flex-1 ' + (n.read ? 'ml-5' : '')}>
                   <div className="flex items-center justify-between">
-                    <span className={`text-sm ${n.read ? 'text-text-secondary' : 'text-text font-semibold'}`}>{n.title}</span>
+                    <span className={'text-sm ' + (n.read ? 'text-text-secondary' : 'text-text font-semibold')}>{n.title}</span>
                     <span className="text-[11px] text-text-secondary/50">{dayjs(n.createdAt).fromNow()}</span>
                   </div>
                   <p className="text-sm text-text-secondary mt-0.5 leading-relaxed">{n.content}</p>

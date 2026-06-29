@@ -9,22 +9,24 @@ export class UserService {
 
   async getProfile(userId: string) {
     const user = await this.userRepo.findOneBy({ id: userId });
-    if (!user) throw new NotFoundException('\u7528\u6237\u4e0d\u5b58\u5728');
+    if (!user) throw new NotFoundException('用户不存在');
     const { passwordHash, ...rest } = user;
     return rest;
   }
 
-  async updateProfile(userId: string, data: { nickname?: string; avatarUrl?: string; userCode?: string }) {
+  async updateProfile(userId: string, data: any) {
     const user = await this.userRepo.findOneBy({ id: userId });
-    if (!user) throw new NotFoundException('\u7528\u6237\u4e0d\u5b58\u5728');
-    if (data.nickname) user.nickname = data.nickname;
-    if (data.avatarUrl) user.avatarUrl = data.avatarUrl;
+    if (!user) throw new NotFoundException('用户不存在');
+    const fields = ['nickname', 'avatarUrl', 'gender', 'birthDate', 'bio', 'city', 'province', 'address'];
+    for (const f of fields) {
+      if (data[f] !== undefined) user[f] = data[f];
+    }
     if (data.userCode !== undefined) {
       if (data.userCode) {
         const existing = await this.userRepo.findOneBy({ userCode: data.userCode });
-        if (existing && existing.id !== userId) throw new NotFoundException('\u4ee3\u53f7\u5df2\u88ab\u5360\u7528');
+        if (existing && existing.id !== userId) throw new NotFoundException('代号已被占用');
       }
-      user.userCode = data.userCode || null as any;
+      user.userCode = data.userCode || null;
     }
     await this.userRepo.save(user);
     const { passwordHash, ...rest } = user;
@@ -35,10 +37,10 @@ export class UserService {
     if (!keyword) return [];
     const users = await this.userRepo.find({
       where: [
-        { nickname: Like(%%) },
-        { account: Like(%%) },
-        { phone: Like(%%) },
-        { userCode: Like(%%) },
+        { nickname: Like(`%${keyword}%`) },
+        { account: Like(`%${keyword}%`) },
+        { phone: Like(`%${keyword}%`) },
+        { userCode: Like(`%${keyword}%`) },
       ],
       take: 20,
     });

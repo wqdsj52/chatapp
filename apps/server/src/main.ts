@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DataSource } from 'typeorm';
 import { User, Session, Message, Notification } from './entities';
 import * as bcrypt from 'bcryptjs';
@@ -17,22 +18,22 @@ async function seedDatabase(dataSource: DataSource) {
   const count = await userRepo.count();
   if (count > 0) return;
 
-  console.log('⏳ Seeding demo data...');
+  console.log('Seeding demo data...');
 
   const alice = userRepo.create({
     phone: '13800000001', account: 'alice',
     passwordHash: await bcrypt.hash('123456', 10),
-    nickname: 'Alice', role: 'admin',
+    nickname: 'Alice', role: 'admin', userCode: '10000001',
   });
   const bob = userRepo.create({
     phone: '13800000002', account: 'bob',
     passwordHash: await bcrypt.hash('123456', 10),
-    nickname: 'Bob', role: 'user',
+    nickname: 'Bob', role: 'user', userCode: '10000002',
   });
   const charlie = userRepo.create({
     phone: '13800000003', account: 'charlie',
     passwordHash: await bcrypt.hash('123456', 10),
-    nickname: 'Charlie', role: 'user',
+    nickname: 'Charlie', role: 'user', userCode: '10000003',
   });
   await userRepo.save([alice, bob, charlie]);
 
@@ -57,24 +58,28 @@ async function seedDatabase(dataSource: DataSource) {
   ];
   await notifRepo.save(notifs);
 
-  console.log('✅ Demo data seeded (alice/bob/charlie, password: 123456)');
+  console.log('Demo data seeded (alice/bob/charlie, password: 123456)');
 }
 
 async function bootstrap() {
-  // Only create data dir for SQLite (local dev)
   if (!process.env.DATABASE_URL) {
     const dataDir = path.join(process.cwd(), 'data');
     if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
   }
 
-  const app = await NestFactory.create(AppModule);
+  const uploadsDir = path.join(process.cwd(), 'uploads');
+  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
     origin: process.env.CORS_ORIGIN || true,
     credentials: true,
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-  // Health check endpoint
+  // Serve uploaded files statically
+  app.useStaticAssets(uploadsDir, { prefix: '/uploads' });
+
   app.getHttpAdapter().get('/health', (req: any, res: any) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
@@ -84,6 +89,6 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
-  console.log(`?? Server running on http://localhost:${port}`);
+  console.log('Server running on http://localhost:' + port);
 }
 bootstrap();

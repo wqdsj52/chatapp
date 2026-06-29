@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { authApi } from '../lib/api';
@@ -40,7 +40,6 @@ export default function Login() {
 
   return (
     <div className="h-full flex flex-col items-center justify-center px-8 bg-white page-enter">
-      {/* Logo */}
       <div className="mb-10 text-center">
         <div className="w-20 h-20 rounded-3xl bg-primary flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary/20">
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -51,19 +50,17 @@ export default function Login() {
         <p className="text-text-secondary text-sm mt-1">随时随地，畅快聊天</p>
       </div>
 
-      {/* Mode tabs */}
       <div className="flex w-full mb-6 bg-bg rounded-xl p-1">
         <button
-          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === 'account' ? 'bg-white shadow-sm text-primary' : 'text-text-secondary'}`}
+          className={'flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ' + (mode === 'account' ? 'bg-white shadow-sm text-primary' : 'text-text-secondary')}
           onClick={() => setMode('account')}
         >账号登录</button>
         <button
-          className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${mode === 'sms' ? 'bg-white shadow-sm text-primary' : 'text-text-secondary'}`}
+          className={'flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ' + (mode === 'sms' ? 'bg-white shadow-sm text-primary' : 'text-text-secondary')}
           onClick={() => setMode('sms')}
         >短信验证</button>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleLogin} className="w-full space-y-3">
         {mode === 'account' ? (
           <>
@@ -84,7 +81,7 @@ export default function Login() {
             </div>
             <div>
               <label className="text-xs text-text-secondary font-medium ml-1">验证码</label>
-              <input className="w-full mt-1 px-4 py-3 rounded-xl bg-bg border-none outline-none text-sm focus:ring-2 focus:ring-primary/20 transition" placeholder="请输入 6 位验证码" value={code} onChange={e => setCode(e.target.value)} />
+              <input className="w-full mt-1 px-4 py-3 rounded-xl bg-bg border-none outline-none text-sm focus:ring-2 focus:ring-primary/20 transition" placeholder="请输入6位验证码" value={code} onChange={e => setCode(e.target.value)} />
             </div>
           </>
         )}
@@ -97,7 +94,7 @@ export default function Login() {
           type="submit"
           disabled={loading}
           className="w-full py-3.5 bg-primary hover:bg-primary-dark text-white rounded-xl font-semibold text-base transition-all disabled:opacity-50 shadow-lg shadow-primary/20 active:scale-[0.98] mt-2"
-        >{loading ? '登录中...' : '登录'}</button>
+        >{loading ? '登录中..' : '登录'}</button>
       </form>
 
       <p className="text-center text-xs text-text-secondary/60 mt-8">

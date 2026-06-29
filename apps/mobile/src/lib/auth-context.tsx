@@ -4,6 +4,23 @@ import { api } from './api';
 
 const AuthContext = createContext(null);
 
+function mapUser(u) {
+  return {
+    userId: u.id,
+    account: u.account,
+    nickname: u.nickname,
+    avatarUrl: u.avatarUrl,
+    userCode: u.userCode,
+    gender: u.gender || '',
+    birthDate: u.birthDate || '',
+    bio: u.bio || '',
+    city: u.city || '',
+    province: u.province || '',
+    address: u.address || '',
+    createdAt: u.createdAt,
+  };
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -16,7 +33,7 @@ export function AuthProvider({ children }) {
         setToken(t);
         try {
           const u = await api.getMe();
-          setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl, userCode: u.userCode });
+          setUser(mapUser(u));
         } catch {
           await AsyncStorage.removeItem('token');
           setToken(null);
@@ -31,15 +48,15 @@ export function AuthProvider({ children }) {
     await AsyncStorage.setItem('token', res.accessToken);
     setToken(res.accessToken);
     const u = await api.getMe();
-    setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl, userCode: u.userCode });
+    setUser(mapUser(u));
   };
 
-  const register = async (phone, account, password, nickname, userCode) => {
-    const res = await api.register(phone, account, password, nickname, userCode);
+  const register = async (phone, account, password, nickname) => {
+    const res = await api.register(phone, account, password, nickname);
     await AsyncStorage.setItem('token', res.accessToken);
     setToken(res.accessToken);
     const u = await api.getMe();
-    setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl, userCode: u.userCode });
+    setUser(mapUser(u));
   };
 
   const logout = async () => {
@@ -51,7 +68,7 @@ export function AuthProvider({ children }) {
   const refresh = async () => {
     try {
       const u = await api.getMe();
-      setUser({ userId: u.id, account: u.account, nickname: u.nickname, avatarUrl: u.avatarUrl, userCode: u.userCode });
+      setUser(mapUser(u));
     } catch {}
   };
 

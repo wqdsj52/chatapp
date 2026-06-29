@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+﻿import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import dayjs from 'dayjs';
@@ -55,7 +55,6 @@ export default function ChatRoom() {
 
   return (
     <div className="h-full flex flex-col bg-bg page-enter">
-      {/* Header */}
       <div className="px-4 pt-12 pb-3 bg-white/80 backdrop-blur-lg border-b border-border/50 flex items-center gap-3 flex-shrink-0">
         <button onClick={() => navigate('/chat')} className="w-8 h-8 flex items-center justify-center rounded-full active:bg-gray-100 transition">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -65,7 +64,7 @@ export default function ChatRoom() {
         <div className="flex-1 min-w-0">
           <h2 className="font-bold text-text truncate text-[16px]">{displayName}</h2>
           {session?.type === 'single' && (
-            <p className={`text-xs ${isOnline ? 'text-online font-medium' : 'text-text-secondary/60'}`}>{isOnline ? '在线' : '离线'}</p>
+            <p className={'text-xs ' + (isOnline ? 'text-online font-medium' : 'text-text-secondary/60')}>{isOnline ? '在线' : '离线'}</p>
           )}
           {session?.type === 'group' && (
             <p className="text-xs text-text-secondary/60">{session.members.length} 人</p>
@@ -73,7 +72,6 @@ export default function ChatRoom() {
         </div>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-text-secondary/40">
@@ -95,13 +93,13 @@ export default function ChatRoom() {
                   {dayjs(msg.createdAt).format('HH:mm')}
                 </div>
               )}
-              <div className={`flex items-end gap-2 ${isSelf ? 'flex-row-reverse' : ''} ${!isSelf && !showAvatar ? 'pl-10' : ''}`}>
+              <div className={'flex items-end gap-2 ' + (isSelf ? 'flex-row-reverse' : '') + (!isSelf && !showAvatar ? ' pl-10' : '')}>
                 {!isSelf && showAvatar && (
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mb-0.5">
                     {msg.sender?.nickname?.[0] || '?'}
                   </div>
                 )}
-                <div className={`msg-bubble ${isSelf ? 'self' : 'other'}`}>
+                <div className={'msg-bubble ' + (isSelf ? 'self' : 'other')}>
                   {!isSelf && showAvatar && session?.type === 'group' && (
                     <p className="text-[11px] text-primary font-medium mb-0.5">{msg.sender?.nickname}</p>
                   )}
@@ -126,7 +124,6 @@ export default function ChatRoom() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input bar */}
       <div className="px-3 py-2 pb-6 bg-white border-t border-border/50 flex items-center gap-2 flex-shrink-0">
         <input
           name="message-input"
