@@ -43,3 +43,6 @@ screenshots/
 
 # Local Netlify folder
 .netlify
+apk-output/
+apk-release/
+*.apk
