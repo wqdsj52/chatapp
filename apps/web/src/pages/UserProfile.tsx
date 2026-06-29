@@ -70,12 +70,12 @@ export default function UserProfile() {
         )}
       </div>
       <div className="bg-white mt-3">
-        {profile.gender && <InfoRow label="性别" value={GENDER_MAP[profile.gender] || profile.gender} />}
-        {profile.birthDate && <InfoRow label="生日" value={profile.birthDate} />}
-        {(profile.province || profile.city) && <InfoRow label="地区" value={[profile.province, profile.city].filter(Boolean).join(' ')} />}
-        {profile.address && <InfoRow label="地址" value={profile.address} />}
-        {profile.phone && <InfoRow label="手机" value={profile.phone} />}
-        <InfoRow label="注册" value={profile.createdAt ? new Date(profile.createdAt).toLocaleDateString('zh-CN') : ''} />
+        <InfoRow label="性别" value={GENDER_MAP[profile.gender] || '-'} />
+        <InfoRow label="生日" value={profile.birthDate || '-'} />
+        <InfoRow label="地区" value={[profile.province, profile.city].filter(Boolean).join(' ') || '-'} />
+        <InfoRow label="地址" value={profile.address || '-'} />
+        <InfoRow label="手机" value={profile.phone || '-'} />
+        <InfoRow label="注册" value={profile.createdAt ? new Date(profile.createdAt).toLocaleDateString('zh-CN') : '-'} />
       </div>
     </div>
   );
