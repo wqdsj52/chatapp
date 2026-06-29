@@ -1,4 +1,4 @@
-import { Controller, Post, Req, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+﻿import { Controller, Post, Req, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -24,7 +24,7 @@ export class UploadController {
       limits: { fileSize: 5 * 1024 * 1024 },
       fileFilter: (req, file, cb) => {
         if (!file.mimetype.match(/^image\/(jpeg|jpg|png|gif|webp)$/)) {
-          return cb(new BadRequestException('只支持图片文件 (jpg/png/gif/webp)'), false);
+          return cb(new BadRequestException('只支持图片文件(jpg/png/gif/webp)'), false);
         }
         cb(null, true);
       },
