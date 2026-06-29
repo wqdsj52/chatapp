@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userApi, chatApi, friendApi } from '../lib/api';
 import { useStore } from '../store/useStore';
@@ -20,7 +20,7 @@ export default function Search() {
     try {
       const users = await userApi.search(q);
       setResults(users.filter((u: any) => u.id !== me?.id));
-    } catch { setResults([]); }
+    } catch(e) { setResults([]); }
     finally { setLoading(false); }
   };
 
@@ -28,7 +28,7 @@ export default function Search() {
     try {
       const session = await chatApi.createSingleSession(userId);
       navigate('/chat/' + session.id);
-    } catch {}
+    } catch(e) {}
   };
 
   const handleAddFriend = async (userId: string) => {
@@ -82,3 +82,4 @@ export default function Search() {
     </div>
   );
 }
+

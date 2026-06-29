@@ -1,4 +1,4 @@
-﻿import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Session } from './session.entity';
 import { User } from './user.entity';
 
@@ -22,7 +22,7 @@ export class Message {
   senderId!: string;
 
   @Column({ default: 'text' })
-  type!: 'text' | 'image' | 'file';
+  type!: 'text' | 'image' | 'file' | 'voice';
 
   @Column({ default: '' })
   content!: string;

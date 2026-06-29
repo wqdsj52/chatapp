@@ -8,6 +8,7 @@ import { User, Session, Message, Notification } from './entities';
 import * as bcrypt from 'bcryptjs';
 import * as fs from 'fs';
 import * as path from 'path';
+import { AllExceptionsFilter } from './all-exceptions.filter';
 
 async function seedDatabase(dataSource: DataSource) {
   const userRepo = dataSource.getRepository(User);
@@ -72,18 +73,18 @@ async function seedDatabase(dataSource: DataSource) {
 
   // 5. Messages
   await messageRepo.save([
-    messageRepo.create({ sessionId: s1.id, senderId: alice.id, content: '你好 Bob！' }),
-    messageRepo.create({ sessionId: s1.id, senderId: bob.id, content: '嗨 Alice，最近怎么样？' }),
-    messageRepo.create({ sessionId: s1.id, senderId: alice.id, content: '很好，正在开发聊天软件呢 🚀' }),
-    messageRepo.create({ sessionId: s2.id, senderId: alice.id, content: '大家好，欢迎来到开发群！' }),
-    messageRepo.create({ sessionId: s2.id, senderId: charlie.id, content: 'Hi! 我是 Charlie' }),
+    messageRepo.create({ sessionId: s1.id, senderId: alice.id, content: 'Hello Bob!' }),
+    messageRepo.create({ sessionId: s1.id, senderId: bob.id, content: 'Hi Alice, how are you?' }),
+    messageRepo.create({ sessionId: s1.id, senderId: alice.id, content: 'Great, working on the chat app! 🚀' }),
+    messageRepo.create({ sessionId: s2.id, senderId: alice.id, content: 'Hello everyone, welcome to the dev group!' }),
+    messageRepo.create({ sessionId: s2.id, senderId: charlie.id, content: 'Hi! I am Charlie' }),
   ]);
 
   // 6. Notifications
   await notifRepo.save([
-    notifRepo.create({ userId: alice.id, type: 'system', title: '欢迎', content: '欢迎使用聊天系统！' }),
-    notifRepo.create({ userId: bob.id, type: 'system', title: '欢迎', content: '欢迎使用聊天系统！' }),
-    notifRepo.create({ userId: charlie.id, type: 'system', title: '欢迎', content: '欢迎使用聊天系统！' }),
+    notifRepo.create({ userId: alice.id, type: 'system', title: 'Welcome', content: 'Welcome to ChatApp!' }),
+    notifRepo.create({ userId: bob.id, type: 'system', title: 'Welcome', content: 'Welcome to ChatApp!' }),
+    notifRepo.create({ userId: charlie.id, type: 'system', title: 'Welcome', content: 'Welcome to ChatApp!' }),
   ]);
 
   console.log('Demo data seeded (alice/bob/charlie, password: 123456)');
@@ -99,6 +100,7 @@ async function bootstrap() {
   if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors({ origin: process.env.CORS_ORIGIN || true, credentials: true });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useStaticAssets(uploadsDir, { prefix: '/uploads' });

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { friendApi } from '../lib/api';
@@ -26,7 +26,7 @@ export default function Notifications() {
     try {
       const reqs = await friendApi.getPendingRequests();
       setPendingRequests(reqs);
-    } catch {}
+    } catch(e) {}
   };
 
   const handleAccept = async (requestId: string) => {
@@ -34,7 +34,7 @@ export default function Notifications() {
       await friendApi.acceptRequest(requestId);
       setHandledIds(prev => new Set(prev).add(requestId));
       fetchNotifications();
-    } catch {}
+    } catch(e) {}
   };
 
   const handleReject = async (requestId: string) => {
@@ -42,7 +42,7 @@ export default function Notifications() {
       await friendApi.rejectRequest(requestId);
       setHandledIds(prev => new Set(prev).add(requestId));
       fetchNotifications();
-    } catch {}
+    } catch(e) {}
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -112,3 +112,4 @@ export default function Notifications() {
     </div>
   );
 }
+

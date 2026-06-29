@@ -21,6 +21,7 @@ export default function Profile() {
   const [province, setProvince] = useState('');
   const [city, setCity] = useState('');
   const [address, setAddress] = useState('');
+  const [userCode, setUserCode] = useState('');
 
   const startEdit = () => {
     setNickname(user?.nickname || '');
@@ -30,14 +31,19 @@ export default function Profile() {
     setProvince(user?.province || '');
     setCity(user?.city || '');
     setAddress(user?.address || '');
+    setUserCode(user?.userCode || '');
     setEditing(true);
   };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const updated = await userApi.updateMe({ nickname, gender, birthDate, bio, province, city, address });
-      setUser(updated);
+      const updated = await userApi.updateMe({ nickname, gender, birthDate, bio, province, city, address, userCode });
+      // Merge API response with form data (API may not return extended fields)
+      const merged = { ...updated, gender, birthDate, bio, province, city, address, userCode };
+      setUser(merged);
+      // Also save extended fields to localStorage directly
+      localStorage.setItem('userExtra', JSON.stringify({ gender, birthDate, bio, province, city, address, userCode }));
       setEditing(false);
     } catch (e) { console.error(e); }
     finally { setSaving(false); }
@@ -64,13 +70,13 @@ export default function Profile() {
   const handleLogout = () => { logout(); navigate('/login'); };
 
   const menuItems = [
-    { label: '通知设置', icon: 'M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0', path: '/notifications' },
+    { label: '通知设置', icon: 'M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0', path: '/notification-settings' },
     { label: '好友列表', icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', path: '/friends' },
-    { label: '意见反馈', icon: 'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z', path: '' },
+    { label: '意见反馈', icon: 'M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z', path: '/feedback' },
   ];
 
   return (
-    <div className="h-full flex flex-col bg-bg page-enter">
+    <div className="h-full flex flex-col bg-bg page-enter overflow-y-auto">
       <div className="bg-white px-5 pt-14 pb-6">
         <h1 className="text-2xl font-bold text-text tracking-tight mb-5">我的</h1>
         <div className="flex items-center gap-4">
@@ -121,6 +127,10 @@ export default function Profile() {
           <div>
             <label className="text-xs text-text-secondary font-medium">昵称</label>
             <input className="w-full mt-1 px-3 py-2.5 rounded-xl bg-bg border-none outline-none text-sm" value={nickname} onChange={e => setNickname(e.target.value)} placeholder="请输入昵称" />
+          </div>
+          <div>
+            <label className="text-xs text-text-secondary font-medium">用户代号</label>
+            <input className="w-full mt-1 px-3 py-2.5 rounded-xl bg-bg border-none outline-none text-sm" value={userCode} onChange={e => setUserCode(e.target.value.replace(/[^0-9]/g, "").slice(0,8))} placeholder="8位数字代号，可留空自动生成" />
           </div>
           <div>
             <label className="text-xs text-text-secondary font-medium">性别</label>
@@ -197,7 +207,7 @@ export default function Profile() {
         </button>
       </div>
 
-      <p className="text-center text-xs text-text-secondary/30 mt-auto pb-4">ChatApp v1.0.1</p>
+      <p className="text-center text-xs text-text-secondary/30 mt-auto pb-4">ChatApp v1.0.3</p>
     </div>
   );
 }
@@ -210,3 +220,8 @@ function InfoRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+
+
+
+

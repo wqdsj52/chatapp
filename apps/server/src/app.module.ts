@@ -5,7 +5,8 @@ import { ChatModule } from './chat/chat.module';
 import { UserModule } from './user/user.module';
 import { NotificationModule } from './notification/notification.module';
 import { AdminModule } from './admin/admin.module';
-import { User, Session, Message, Notification, FriendRequest } from './entities';
+import { FeedbackModule } from './feedback/feedback.module';
+import { User, Session, Message, Notification, FriendRequest, Feedback } from './entities';
 import * as path from 'path';
 
 const isProduction = !!process.env.DATABASE_URL;
@@ -19,14 +20,14 @@ const isProduction = !!process.env.DATABASE_URL;
             url: process.env.DATABASE_URL,
             ssl: { rejectUnauthorized: false },
             synchronize: true,
-            entities: [User, Session, Message, Notification, FriendRequest],
+            entities: [User, Session, Message, Notification, FriendRequest, Feedback],
           }
         : {
             type: 'sqljs',
             location: path.join(process.cwd(), 'data', 'chat.sqlite'),
             autoSave: true,
             synchronize: true,
-            entities: [User, Session, Message, Notification, FriendRequest],
+            entities: [User, Session, Message, Notification, FriendRequest, Feedback],
           },
     ),
     AuthModule,
@@ -34,6 +35,7 @@ const isProduction = !!process.env.DATABASE_URL;
     UserModule,
     NotificationModule,
     AdminModule,
+    FeedbackModule,
   ],
 })
 export class AppModule {}

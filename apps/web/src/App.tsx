@@ -10,6 +10,8 @@ import Profile from './pages/Profile';
 import Friends from './pages/Friends';
 import UserProfile from './pages/UserProfile';
 import Search from './pages/Search';
+import NotificationSettings from './pages/NotificationSettings';
+import Feedback from './pages/Feedback';
 import BottomNav from './components/BottomNav';
 
 function ProtectedLayout() {
@@ -31,7 +33,7 @@ function ProtectedLayout() {
 
   if (!token) return <Navigate to="/login" replace />;
 
-  const noNavPaths = ['/chat/', '/user/', '/search'];
+  const noNavPaths = ['/chat/', '/user/', '/search', '/notification-settings', '/feedback'];
   const showNav = !noNavPaths.some(p => location.pathname.startsWith(p));
 
   return (
@@ -59,6 +61,8 @@ export default function App() {
             <Route path="/user/:userId" element={<UserProfile />} />
             <Route path="/search" element={<Search />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/notification-settings" element={<NotificationSettings />} />
+            <Route path="/feedback" element={<Feedback />} />
             <Route path="*" element={<Navigate to="/chat" replace />} />
           </Route>
         </Routes>

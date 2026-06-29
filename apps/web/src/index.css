@@ -51,6 +51,7 @@ html, body, #root {
   color: white;
   border-bottom-right-radius: 6px;
 }
+.msg-bubble.voice-bubble { max-width: 260px; min-width: 180px; padding: 10px 12px; }
 .msg-bubble.other {
   background: #e9ecf0;
   color: var(--color-text);

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 
@@ -14,7 +14,7 @@ export default function Friends() {
       const { chatApi } = await import('../lib/api');
       const session = await chatApi.createSingleSession(userId);
       navigate('/chat/' + session.id);
-    } catch {}
+    } catch(e) {}
   };
 
   return (
@@ -34,10 +34,10 @@ export default function Friends() {
           </div>
         ) : friends.map(f => (
           <div key={f.id} className="flex items-center bg-white border-b border-border px-5 py-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3 overflow-hidden cursor-pointer" onClick={() => navigate('/user/' + f.id)}>
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3 overflow-hidden cursor-pointer" onClick={() => navigate('/user/' + f.id, { state: { id: f.id, nickname: f.nickname, avatarUrl: f.avatarUrl, account: f.account, userCode: f.userCode, gender: f.gender, birthDate: f.birthDate, bio: f.bio, province: f.province, city: f.city, address: f.address, phone: f.phone, createdAt: f.createdAt } })}>
               {f.avatarUrl ? <img src={f.avatarUrl} className="w-10 h-10 rounded-full object-cover" alt="" /> : <span className="text-primary font-bold">{(f.nickname || f.account)[0]}</span>}
             </div>
-            <div className="flex-1 min-w-0 cursor-pointer" onClick={() => navigate('/user/' + f.id)}>
+            <div className="flex-1 min-w-0 cursor-pointer" onClick={() => navigate('/user/' + f.id, { state: { id: f.id, nickname: f.nickname, avatarUrl: f.avatarUrl, account: f.account, userCode: f.userCode, gender: f.gender, birthDate: f.birthDate, bio: f.bio, province: f.province, city: f.city, address: f.address, phone: f.phone, createdAt: f.createdAt } })}>
               <div className="text-sm font-medium truncate">{f.nickname || f.account}</div>
               {f.userCode && <div className="text-xs text-primary">#{f.userCode}</div>}
             </div>
@@ -53,3 +53,5 @@ export default function Friends() {
     </div>
   );
 }
+
+

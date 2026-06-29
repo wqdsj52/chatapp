@@ -8,10 +8,10 @@ export default function Login() {
   const setAuth = useStore(s => s.setAuth);
   const initSocket = useStore(s => s.initSocket);
   const [mode, setMode] = useState<'account' | 'sms'>('account');
-  const [account, setAccount] = useState('alice');
-  const [password, setPassword] = useState('123456');
-  const [phone, setPhone] = useState('13800000001');
-  const [code, setCode] = useState('123456');
+  const [account, setAccount] = useState('');
+  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -32,7 +32,12 @@ export default function Login() {
       initSocket();
       navigate('/chat', { replace: true });
     } catch (err: any) {
-      setError(err.message || '登录失败');
+      const message = err?.message || '登录失败';
+      if (/Failed to fetch|NetworkError|Load failed|请求失败|服务不可用/.test(message)) {
+        setError('服务不可用，请稍后再试');
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
@@ -102,7 +107,6 @@ export default function Login() {
       </p>
 
       <p className="text-center text-xs text-text-secondary/60 mt-4">
-        测试账号：alice / 123456 或 bob / 123456
       </p>
     </div>
   );

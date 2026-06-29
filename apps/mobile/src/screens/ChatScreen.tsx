@@ -57,7 +57,7 @@ export default function ChatScreen({ route, navigation }: any) {
       await api.sendMessage(sessionId, 'text', content);
       await loadMessages();
     } catch (e: any) {
-      Alert.alert('发送失败', e.message);
+      Alert.alert('发送失�?, e.message);
     } finally {
       setSending(false);
     }
@@ -66,7 +66,7 @@ export default function ChatScreen({ route, navigation }: any) {
   const handlePickImage = async () => {
     setMenuVisible(false);
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') return Alert.alert('提示', '需要相册权限');
+    if (status !== 'granted') return Alert.alert('提示', '需要相册权�?);
     const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
     if (result.canceled) return;
     const asset = result.assets[0];
@@ -76,7 +76,7 @@ export default function ChatScreen({ route, navigation }: any) {
   const handleTakePhoto = async () => {
     setMenuVisible(false);
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') return Alert.alert('提示', '需要相机权限');
+    if (status !== 'granted') return Alert.alert('提示', '需要相机权�?);
     const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
     if (result.canceled) return;
     const asset = result.assets[0];
@@ -101,7 +101,7 @@ export default function ChatScreen({ route, navigation }: any) {
       await api.uploadChatFile(sessionId, uri, fileName, mimeType);
       await loadMessages();
     } catch (e: any) {
-      Alert.alert('发送失败', e.message);
+      Alert.alert('发送失�?, e.message);
     }
     setUploading(false);
   };
@@ -165,7 +165,7 @@ export default function ChatScreen({ route, navigation }: any) {
         <View style={[styles.bubble, mine ? styles.me : styles.them]}>
           {!mine && (
             <TouchableOpacity onPress={() => msg.senderId && navigation.navigate('UserProfile', { userId: msg.senderId })}>
-              <Text style={styles.sender}>{msg.sender?.nickname || msg.sender?.account || '对方'}</Text>
+              <Text style={styles.sender}>{msg.sender?.nickname || msg.sender?.account || otherUser?.nickname || '�Է�'}</Text>
             </TouchableOpacity>
           )}
           <Text style={[styles.msgText, mine ? styles.msgTextMe : styles.msgTextThem]}>{msg.content}</Text>
@@ -187,7 +187,7 @@ export default function ChatScreen({ route, navigation }: any) {
       headerShown: true,
       headerTitle: () => (
         <TouchableOpacity onPress={handleHeaderPress}>
-          <Text style={{ fontSize: 17, fontWeight: '600', color: '#1E293B' }}>{name || '聊天'}</Text>
+          <Text style={{ fontSize: 17, fontWeight: '600', color: '#1E293B' }}>{otherUser?.nickname || name || '����'}</Text>
           <Text style={{ fontSize: 11, color: '#3B82F6', textAlign: 'center' }}>{'查看名片'}</Text>
         </TouchableOpacity>
       ),
@@ -225,7 +225,7 @@ export default function ChatScreen({ route, navigation }: any) {
       <Modal visible={menuVisible} transparent animationType="slide" onRequestClose={() => setMenuVisible(false)}>
         <TouchableOpacity style={styles.menuOverlay} activeOpacity={1} onPress={() => setMenuVisible(false)}>
           <View style={styles.menuSheet}>
-            <Text style={styles.menuTitle}>{'发送内容'}</Text>
+            <Text style={styles.menuTitle}>{'发送内�?}</Text>
             <View style={styles.menuGrid}>
               <TouchableOpacity style={styles.menuItem} onPress={handlePickImage}>
                 <View style={[styles.menuIcon, { backgroundColor: '#3B82F6' }]}>

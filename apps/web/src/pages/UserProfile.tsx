@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { userApi, friendApi, chatApi } from '../lib/api';
 import { useStore } from '../store/useStore';
@@ -17,12 +17,45 @@ export default function UserProfile() {
   useEffect(() => {
     if (!userId) return;
     setLoading(true);
-    Promise.all([
-      userApi.getById(userId).catch(() => null),
-      friendApi.check(userId).catch(() => ({ isFriend: false })),
-    ]).then(([p, f]) => {
+
+    // Try to get profile from navigation state first (passed from ChatRoom/Friends)
+    const state = (window.history.state as any)?.usr;
+    if (state && state.id === userId && state.nickname) {
+      setProfile(state);
+      setIsFriend(false);
+      setLoading(false);
+      friendApi.check(userId).then(f => setIsFriend(f?.isFriend || false)).catch(() => {});
+      // Try to enrich with full profile from API
+      userApi.getById(userId).then((p: any) => { if (p) setProfile((prev: any) => ({ ...prev, ...p })); }).catch(async () => {
+        // Fallback: search by nickname to get userCode
+        try {
+          const results = await userApi.search(state.nickname || state.account || '');
+          const found = Array.isArray(results) ? results.find((u: any) => u.id === userId) : null;
+          if (found) setProfile((prev: any) => ({ ...prev, ...found }));
+        } catch(e) {}
+      });
+      return;
+    }
+
+    // Try getById, then fallback to searching friends/sessions
+    userApi.getById(userId).then((p: any) => {
       setProfile(p);
-      setIsFriend(f?.isFriend || false);
+      friendApi.check(userId).then(f => setIsFriend(f?.isFriend || false)).catch(() => {});
+    }).catch(async () => {
+      // Fallback: search by account/nickname from store friends or sessions
+      const store = useStore.getState();
+      const fromFriends = store.friends.find(f => f.id === userId);
+      if (fromFriends) { setProfile(fromFriends); setIsFriend(true); setLoading(false); return; }
+
+      // Try to find from session otherMembers or message senders
+      for (const s of store.sessions) {
+        const om = s.otherMembers.find(m => m.id === userId);
+        if (om) { setProfile(om); setLoading(false); return; }
+      }
+
+      // Last resort: search by known nickname/account
+      // We don't have the name, so show a minimal profile from the userId
+      setProfile((prev: any) => ({ id: userId, nickname: prev?.nickname || '用户', account: prev?.account || '' }));
     }).finally(() => setLoading(false));
   }, [userId]);
 
@@ -30,7 +63,7 @@ export default function UserProfile() {
     try {
       const session = await chatApi.createSingleSession(userId!);
       navigate('/chat/' + session.id);
-    } catch {}
+    } catch(e) {}
   };
 
   const handleAddFriend = async () => {
@@ -72,6 +105,7 @@ export default function UserProfile() {
       <div className="bg-white mt-3">
         <InfoRow label="性别" value={GENDER_MAP[profile.gender] || '-'} />
         <InfoRow label="生日" value={profile.birthDate || '-'} />
+        <InfoRow label="签名" value={profile.bio || '-' } />
         <InfoRow label="地区" value={[profile.province, profile.city].filter(Boolean).join(' ') || '-'} />
         <InfoRow label="地址" value={profile.address || '-'} />
         <InfoRow label="手机" value={profile.phone || '-'} />
@@ -89,3 +123,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+
+
+
