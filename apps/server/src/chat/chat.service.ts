@@ -1,6 +1,6 @@
 ﻿import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { User, Session, Message } from '../entities';
 
 @Injectable()
@@ -9,28 +9,39 @@ export class ChatService {
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Session) private sessionRepo: Repository<Session>,
     @InjectRepository(Message) private messageRepo: Repository<Message>,
+    private dataSource: DataSource,
   ) {}
 
+  private async getSessionMembers(sessionId: string) {
+    const rows = await this.dataSource.query(
+      'SELECT u.id, u.nickname, u.avatarUrl, u.account, u.userCode FROM users u INNER JOIN session_members sm ON u.id = sm.userId WHERE sm.sessionId = ?',
+      [sessionId]
+    );
+    return rows;
+  }
+
   async getSessions(userId: string) {
-    const sessions = await this.sessionRepo.find({
-      where: { members: { id: userId } },
-      relations: { members: true },
-    });
+    // Get sessions where user is a member using raw query
+    const sessionRows = await this.dataSource.query(
+      'SELECT s.id, s.type, s.name, s.createdAt FROM sessions s INNER JOIN session_members sm ON s.id = sm.sessionId WHERE sm.userId = ?',
+      [userId]
+    );
 
     const result = await Promise.all(
-      sessions.map(async (s) => {
+      sessionRows.map(async (s: any) => {
+        const members = await this.getSessionMembers(s.id);
         const lastMsg = await this.messageRepo.findOne({
           where: { sessionId: s.id },
           order: { createdAt: 'DESC' },
         });
-        const otherMembers = s.members
-          .filter((m) => m.id !== userId)
-          .map((m) => ({ id: m.id, nickname: m.nickname, avatarUrl: m.avatarUrl }));
+        const otherMembers = members
+          .filter((m: any) => m.id !== userId)
+          .map((m: any) => ({ id: m.id, nickname: m.nickname, avatarUrl: m.avatarUrl }));
         return {
           id: s.id,
           type: s.type,
           name: s.name,
-          members: s.members.map((m) => m.id),
+          members: members.map((m: any) => m.id),
           createdAt: s.createdAt,
           lastMessage: lastMsg
             ? { id: lastMsg.id, type: lastMsg.type, content: lastMsg.content, createdAt: lastMsg.createdAt }
@@ -40,7 +51,7 @@ export class ChatService {
       }),
     );
 
-    result.sort((a, b) => {
+    result.sort((a: any, b: any) => {
       const aTime = a.lastMessage?.createdAt || a.createdAt;
       const bTime = b.lastMessage?.createdAt || b.createdAt;
       return new Date(bTime).getTime() - new Date(aTime).getTime();
@@ -49,7 +60,6 @@ export class ChatService {
   }
 
   async createSingleSession(userId: string, targetUserId: string) {
-    // Find existing single session between two users
     const allSessions = await this.sessionRepo.find({
       where: { type: 'single' as any },
       relations: { members: true },
@@ -64,15 +74,22 @@ export class ChatService {
     const target = await this.userRepo.findOneBy({ id: targetUserId });
     if (!target) throw new NotFoundException('目标用户不存在');
     const me = await this.userRepo.findOneBy({ id: userId });
-    const session = this.sessionRepo.create({ type: 'single', members: [me!, target] });
-    return this.sessionRepo.save(session);
+
+    const session = this.sessionRepo.create({ type: 'single' });
+    await this.sessionRepo.save(session);
+    await this.dataSource.query('INSERT INTO session_members ("sessionId", "userId") VALUES (?, ?)', [session.id, userId]);
+    await this.dataSource.query('INSERT INTO session_members ("sessionId", "userId") VALUES (?, ?)', [session.id, targetUserId]);
+    return session;
   }
 
   async createGroupSession(userId: string, memberIds: string[], name: string) {
     const allIds = [...new Set([userId, ...memberIds])];
-    const members = await this.userRepo.find({ where: { id: In(allIds) } });
-    const session = this.sessionRepo.create({ type: 'group', name, members });
-    return this.sessionRepo.save(session);
+    const session = this.sessionRepo.create({ type: 'group', name });
+    await this.sessionRepo.save(session);
+    for (const uid of allIds) {
+      await this.dataSource.query('INSERT INTO session_members ("sessionId", "userId") VALUES (?, ?)', [session.id, uid]);
+    }
+    return session;
   }
 
   async getMessages(userId: string, sessionId: string, cursor?: string, limit = 50) {
@@ -81,7 +98,9 @@ export class ChatService {
       relations: { members: true },
     });
     if (!session) throw new NotFoundException('会话不存在');
-    if (!session.members.some((m) => m.id === userId)) throw new ForbiddenException('无权访问该会话');
+
+    const members = await this.getSessionMembers(sessionId);
+    if (!members.some((m: any) => m.id === userId)) throw new ForbiddenException('无权访问该会话');
 
     const qb = this.messageRepo
       .createQueryBuilder('msg')
@@ -111,12 +130,8 @@ export class ChatService {
   }
 
   async sendMessage(userId: string, sessionId: string, type: string, content: string) {
-    const session = await this.sessionRepo.findOne({
-      where: { id: sessionId },
-      relations: { members: true },
-    });
-    if (!session) throw new NotFoundException('会话不存在');
-    if (!session.members.some((m) => m.id === userId)) throw new ForbiddenException('无权发送');
+    const members = await this.getSessionMembers(sessionId);
+    if (!members.some((m: any) => m.id === userId)) throw new ForbiddenException('无权发送');
 
     const msg = this.messageRepo.create({ sessionId, senderId: userId, type: type as any, content });
     const saved = await this.messageRepo.save(msg);
@@ -133,11 +148,7 @@ export class ChatService {
     };
   }
 
-  async getSessionMembers(sessionId: string) {
-    const session = await this.sessionRepo.findOne({
-      where: { id: sessionId },
-      relations: { members: true },
-    });
-    return session?.members || [];
+  async getSessionMembersPublic(sessionId: string) {
+    return this.getSessionMembers(sessionId);
   }
 }

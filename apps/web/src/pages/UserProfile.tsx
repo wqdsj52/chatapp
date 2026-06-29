@@ -11,12 +11,14 @@ export default function UserProfile() {
   const me = useStore(s => s.user);
   const [profile, setProfile] = useState<any>(null);
   const [isFriend, setIsFriend] = useState(false);
+  const [requested, setRequested] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!userId) return;
+    setLoading(true);
     Promise.all([
-      userApi.search(userId).then(list => list.find((u: any) => u.id === userId)),
+      userApi.getById(userId).catch(() => null),
       friendApi.check(userId).catch(() => ({ isFriend: false })),
     ]).then(([p, f]) => {
       setProfile(p);
@@ -29,6 +31,15 @@ export default function UserProfile() {
       const session = await chatApi.createSingleSession(userId!);
       navigate('/chat/' + session.id);
     } catch {}
+  };
+
+  const handleAddFriend = async () => {
+    try {
+      await friendApi.add(userId!);
+      setRequested(true);
+    } catch (err: any) {
+      alert(err.message || '发送失败');
+    }
   };
 
   if (loading) return <div className="flex items-center justify-center h-full text-text-secondary">加载中...</div>;
@@ -48,19 +59,23 @@ export default function UserProfile() {
         {me?.id !== userId && (
           <div className="flex gap-3 mt-4">
             <button onClick={handleChat} className="px-6 py-2 bg-primary text-white rounded-full text-sm font-medium">发消息</button>
-            <button onClick={async () => { try { await friendApi.add(userId!); setIsFriend(true); } catch {} }} className={'px-6 py-2 rounded-full text-sm font-medium ' + (isFriend ? 'bg-gray-100 text-text-secondary' : 'border border-primary text-primary')}>
-              {isFriend ? '已好友' : '添加好友'}
-            </button>
+            {isFriend ? (
+              <button className="px-6 py-2 bg-gray-100 text-text-secondary rounded-full text-sm font-medium">已好友</button>
+            ) : (
+              <button onClick={handleAddFriend} className={'px-6 py-2 rounded-full text-sm font-medium ' + (requested ? 'bg-gray-100 text-text-secondary' : 'border border-primary text-primary')}>
+                {requested ? '已申请' : '添加好友'}
+              </button>
+            )}
           </div>
         )}
       </div>
       <div className="bg-white mt-3">
-        {profile.gender && <InfoRow label="性别" value={GENDER_MAP[profile.gender] || profile.gender} />}
-        {profile.birthDate && <InfoRow label="生日" value={profile.birthDate} />}
-        {(profile.province || profile.city) && <InfoRow label="地区" value={[profile.province, profile.city].filter(Boolean).join(' ')} />}
-        {profile.address && <InfoRow label="地址" value={profile.address} />}
-        {profile.phone && <InfoRow label="手机" value={profile.phone} />}
-        <InfoRow label="注册" value={profile.createdAt ? new Date(profile.createdAt).toLocaleDateString('zh-CN') : ''} />
+        <InfoRow label="性别" value={GENDER_MAP[profile.gender] || '-'} />
+        <InfoRow label="生日" value={profile.birthDate || '-'} />
+        <InfoRow label="地区" value={[profile.province, profile.city].filter(Boolean).join(' ') || '-'} />
+        <InfoRow label="地址" value={profile.address || '-'} />
+        <InfoRow label="手机" value={profile.phone || '-'} />
+        <InfoRow label="注册" value={profile.createdAt ? new Date(profile.createdAt).toLocaleDateString('zh-CN') : '-'} />
       </div>
     </div>
   );

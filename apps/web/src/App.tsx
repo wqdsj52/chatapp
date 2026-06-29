@@ -1,7 +1,8 @@
-﻿import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+﻿import { HashRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import { useStore } from './store/useStore';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import SessionList from './pages/SessionList';
 import ChatRoom from './pages/ChatRoom';
 import Notifications from './pages/Notifications';
@@ -45,10 +46,11 @@ function ProtectedLayout() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="app-shell">
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route element={<ProtectedLayout />}>
             <Route path="/chat" element={<SessionList />} />
             <Route path="/chat/:sessionId" element={<ChatRoom />} />
@@ -61,6 +63,6 @@ export default function App() {
           </Route>
         </Routes>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }

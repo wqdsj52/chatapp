@@ -1,11 +1,11 @@
-import { io, Socket } from 'socket.io-client';
+﻿import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
 export function getSocket() {
   if (socket) return socket;
   const token = localStorage.getItem('token') || '';
-  const url = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const url = (import.meta.env.VITE_API_URL || 'http://localhost:3001').trim();
   socket = io(url, {
     auth: { token },
     transports: ['websocket', 'polling'],

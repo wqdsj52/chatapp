@@ -97,7 +97,11 @@ export default function Login() {
         >{loading ? '登录中..' : '登录'}</button>
       </form>
 
-      <p className="text-center text-xs text-text-secondary/60 mt-8">
+      <p className="text-center text-sm text-text-secondary mt-4">
+        还没有账号？<button onClick={() => navigate('/register')} className="text-primary font-medium">立即注册</button>
+      </p>
+
+      <p className="text-center text-xs text-text-secondary/60 mt-4">
         测试账号：alice / 123456 或 bob / 123456
       </p>
     </div>

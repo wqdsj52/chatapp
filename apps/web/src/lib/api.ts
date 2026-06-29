@@ -1,4 +1,4 @@
-﻿const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+﻿const BASE = (import.meta.env.VITE_API_URL || 'http://localhost:3001').trim();
 
 function getToken() {
   return localStorage.getItem('token') || '';
@@ -59,14 +59,18 @@ export const userApi = {
   getMe: () => api('/users/me'),
   updateMe: (data: any) => api('/users/me', { method: 'PATCH', body: JSON.stringify(data) }),
   search: (q: string) => api('/users/search?q=' + encodeURIComponent(q)),
+  getById: (id: string) => api('/users/' + id),
   uploadAvatar: (file: File) => uploadFile('/upload/avatar', file),
 };
 
 export const friendApi = {
   getAll: () => api('/friends'),
-  add: (id: string) => api('/friends/' + id, { method: 'POST' }),
+  add: (id: string) => api('/friends/request/' + id, { method: 'POST' }),
   remove: (id: string) => api('/friends/' + id, { method: 'DELETE' }),
   check: (id: string) => api('/friends/' + id + '/check'),
+  getPendingRequests: () => api('/friends/requests/pending'),
+  acceptRequest: (requestId: string) => api('/friends/requests/' + requestId + '/accept', { method: 'POST' }),
+  rejectRequest: (requestId: string) => api('/friends/requests/' + requestId + '/reject', { method: 'POST' }),
 };
 
 export const notifApi = {
