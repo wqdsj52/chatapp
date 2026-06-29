@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+﻿import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { User } from '../entities';
@@ -8,6 +8,13 @@ export class UserService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
   async getProfile(userId: string) {
+    const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) throw new NotFoundException('用户不存在');
+    const { passwordHash, ...rest } = user;
+    return rest;
+  }
+
+  async getUserById(userId: string) {
     const user = await this.userRepo.findOneBy({ id: userId });
     if (!user) throw new NotFoundException('用户不存在');
     const { passwordHash, ...rest } = user;
@@ -37,10 +44,10 @@ export class UserService {
     if (!keyword) return [];
     const users = await this.userRepo.find({
       where: [
-        { nickname: Like(`%${keyword}%`) },
-        { account: Like(`%${keyword}%`) },
-        { phone: Like(`%${keyword}%`) },
-        { userCode: Like(`%${keyword}%`) },
+        { nickname: Like('%' + keyword + '%') },
+        { account: Like('%' + keyword + '%') },
+        { phone: Like('%' + keyword + '%') },
+        { userCode: Like('%' + keyword + '%') },
       ],
       take: 20,
     });
