@@ -312,12 +312,7 @@ export default function ChatRoom() {
           const senderName = msg.sender?.nickname || '未知';
           return (
             <div key={msg.id} className={'flex gap-2 ' + (isSelf ? 'flex-row-reverse' : 'flex-row')}>
-              <img
-                src={senderAvatar || '/default-avatar.png'}
-                alt=""
-                className="w-8 h-8 rounded-full object-cover flex-shrink-0 cursor-pointer"
-                onClick={() => navigate('/user/' + msg.senderId)}
-              />
+{senderAvatar ? (<img src={senderAvatar} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0 cursor-pointer" onClick={() => navigate('/user/' + msg.senderId)} />) : (<div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 bg-gradient-to-br from-blue-400 to-primary cursor-pointer" onClick={() => navigate('/user/' + msg.senderId)}>{senderName?.[0] || '?'}</div>)}
               <div className={'flex flex-col max-w-[70%] ' + (isSelf ? 'items-end' : 'items-start')}>
                 {!isSelf && (
                   <span className="text-xs text-text-secondary mb-1">{senderName}</span>

@@ -1,4 +1,4 @@
-﻿import { Body, Controller, Get, Param, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors, BadRequestException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -51,7 +51,8 @@ export class ChatController {
   )
   async uploadFile(@Req() req: any, @Param('id') sessionId: string, @UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('请选择文件');
-    const host = req.protocol + '://' + req.get('host');
+    const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'https');
+    const host = proto + '://' + req.get('host');
     const fileUrl = host + '/uploads/chat/' + file.filename;
     const isImage = file.mimetype.startsWith('image/');
     const type = isImage ? 'image' : 'file';
@@ -79,7 +80,8 @@ export class ChatController {
     @Body() body: { duration?: string },
   ) {
     if (!file) throw new BadRequestException('请选择语音文件');
-    const host = req.protocol + '://' + req.get('host');
+    const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'https');
+    const host = proto + '://' + req.get('host');
     const voiceUrl = host + '/uploads/voice/' + file.filename;
     const duration = parseFloat(body?.duration || '0') || 0;
     const content = JSON.stringify({ url: voiceUrl, duration });

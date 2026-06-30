@@ -1,4 +1,4 @@
-﻿import { Controller, Post, Req, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Req, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -32,7 +32,8 @@ export class UploadController {
   )
   async uploadAvatar(@Req() req: any, @UploadedFile() file: Express.Multer.File) {
     if (!file) throw new BadRequestException('请选择图片');
-    const host = req.protocol + '://' + req.get('host');
+    const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'https');
+    const host = proto + '://' + req.get('host');
     const avatarUrl = host + '/uploads/avatars/' + file.filename;
     await this.userService.updateProfile(req.user.userId, { avatarUrl });
     return { avatarUrl };
